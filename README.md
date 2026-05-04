@@ -1,43 +1,44 @@
 # tmux-claude-quota-auto-continue
 
-tmux 插件：监控 Claude/Codex 限额文本，重置后自动在原 pane 发送 `continue`。
+A tmux plugin that monitors Claude/Codex quota-limit messages and automatically sends `continue` in the same pane after reset.
 
-## TPM 安装方式（tmux-plugins 风格）
+## Install via TPM
 
-在 `~/.tmux.conf` 中添加：
+Add this to `~/.tmux.conf`:
 
 ```tmux
 set -g @plugin 'myacelw/tmux-claude-quota-auto-continue'
 run '~/.tmux/plugins/tpm/tpm'
 ```
 
-然后在 tmux 中按 `prefix + I` 安装。
+Then press `prefix + I` inside tmux to install.
 
-## 本地手动加载
+## Manual local load
 
 ```tmux
 run-shell /path/to/repo/tmux-claude-quota-auto-continue.tmux
 ```
 
-## 使用
+## Usage
 
-- 默认快捷键：`prefix + Q`（注意是大写Q），可自定义快捷键：`set -g @claude_quota_key Q`
-- 第一次按下：启动（`CQ:ON`）
-- 再按一次：关闭（`CQ:OFF`）
-- 若你确实想用无前缀按键，可设置：`set -g @claude_quota_no_prefix 1`
+- Default hotkey: `prefix + Q` (uppercase `Q`). You can customize it with:
+  `set -g @claude_quota_key Q`
+- First press: enable monitor (`CQ:ON`)
+- Press again: disable monitor (`CQ:OFF`)
+- If you really want no-prefix binding, set:
+  `set -g @claude_quota_no_prefix 1`
 
-## 配置
+## Configuration
 
-仓库已提供默认 `config.toml`，可直接使用。
-如需重置为模板：
+A default `config.toml` is included and ready to use.
+To reset from template:
 
 ```bash
 cp config.example.toml config.toml
 ```
 
-支持：
-- 正则 `message_patterns`（建议 `(?P<reset_time>...)`）
-- 解析不到 reset 时间时跳过，不发送 continue
-- 发送前再次确认 pane 仍为限额状态
-- `log_file` / `lock_file` 若使用相对路径，将相对于 `config.toml` 所在目录解析，默认日志文件为`quota-monitor.log.jsonl`
-
+Supported behavior:
+- Regex `message_patterns` (recommended to include `(?P<reset_time>...)`)
+- If reset time cannot be parsed, event is skipped and no `continue` is sent
+- Re-check pane state before sending `continue`
+- If `log_file` / `lock_file` are relative paths, they are resolved relative to `config.toml`; default log file is `quota-monitor.log.jsonl`
