@@ -39,6 +39,8 @@ cp config.example.toml config.toml
 - 正则 `message_patterns`（建议 `(?P<reset_time>...)`）
 - 解析不到 reset 时间时跳过，不发送 continue
 - 发送前再次确认 pane 仍为限额状态
+- `log_file` / `lock_file` 若使用相对路径，将相对于 `config.toml` 所在目录解析
+
 
 ### 状态栏标记不显示排查
 

@@ -110,12 +110,18 @@ def main() -> int:
     parser.add_argument("--config", default="config.toml")
     args = parser.parse_args()
 
-    cfg = load_toml(Path(args.config))
+    config_path = Path(args.config).expanduser().resolve()
+    cfg = load_toml(config_path)
+    base_dir = config_path.parent
+
     poll = int(cfg.get("poll_interval_seconds", 30))
     lines = int(cfg.get("capture_lines", 200))
     buffer_s = int(cfg.get("wait_buffer_seconds", 60))
-    log_file = Path(cfg.get("log_file", "./quota-monitor.log.jsonl"))
-    state_file = Path(cfg.get("lock_file", "./quota-monitor.state.json"))
+
+    log_file_cfg = Path(cfg.get("log_file", "./quota-monitor.log.jsonl")).expanduser()
+    state_file_cfg = Path(cfg.get("lock_file", "./quota-monitor.state.json")).expanduser()
+    log_file = log_file_cfg if log_file_cfg.is_absolute() else (base_dir / log_file_cfg)
+    state_file = state_file_cfg if state_file_cfg.is_absolute() else (base_dir / state_file_cfg)
     raw_patterns = list(cfg.get("message_patterns", []))
     patterns = [re.compile(x, re.IGNORECASE | re.DOTALL) for x in raw_patterns]
 
