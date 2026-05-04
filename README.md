@@ -41,16 +41,3 @@ cp config.example.toml config.toml
 - 解析不到 reset 时间时跳过，不发送 continue
 - 发送前再次确认 pane 仍为限额状态
 
-## 发布到 GitHub 供 TPM 使用
-
-1. 当前仓库：`https://github.com/myacelw/claude-tmux-retry`
-2. 确保仓库根目录存在：
-   - `tmux-claude-quota-auto-continue.tmux`（TPM 入口）
-   - `scripts/toggle-monitor.sh`
-   - `scripts/tmux_claude_quota_auto_continue.py`
-3. push 到 GitHub：
-   ```bash
-   git remote add origin git@github.com:myacelw/claude-tmux-retry.git
-   git push -u origin main
-   ```
-4. 用户通过 `set -g @plugin 'myacelw/claude-tmux-retry'` 安装。
