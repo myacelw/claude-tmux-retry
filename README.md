@@ -1,27 +1,24 @@
 # tmux-claude-quota-auto-continue
 
-这是一个 tmux 插件风格监控器：默认监控当前 session 全部 pane，检测 Claude/Codex 限额文本并在重置后自动发送 `continue`。
+tmux 插件：监控 Claude/Codex 限额文本，重置后自动在原 pane 发送 `continue`。
 
-## 关键更新（正则匹配）
+## TPM 安装方式（tmux-plugins 风格）
 
-- 限额识别从“关键词”升级为“**可配置正则**（`message_patterns`）”。
-- 支持匹配类似：`You've hit your limit · resets 12:10am (Asia/Shanghai)`。
-- 推荐在正则中提供命名分组 `(?P<reset_time>...)`，脚本会优先用该分组解析重置时间。
-- 若未解析出 reset 时间：跳过本次，不发送 `continue`。
-- 到达等待时间后会再次检查 pane 是否仍为限额提示，若已退出/有其他操作则跳过发送。
-
-## 安装
-
-在 `.tmux.conf` 中：
+在 `~/.tmux.conf` 中添加：
 
 ```tmux
-run-shell /path/to/repo/plugins/tmux-claude-quota-auto-continue/tmux-claude-quota-auto-continue.tmux
+set -g @plugin 'myacelw/claude-tmux-retry'
+run '~/.tmux/plugins/tpm/tpm'
 ```
 
-重载：
+然后在 tmux 中按 `prefix + I` 安装。
 
-```bash
-tmux source-file ~/.tmux.conf
+仓库地址：`https://github.com/myacelw/claude-tmux-retry`
+
+## 本地手动加载
+
+```tmux
+run-shell /path/to/repo/tmux-claude-quota-auto-continue.tmux
 ```
 
 ## 使用
@@ -32,18 +29,28 @@ tmux source-file ~/.tmux.conf
 
 ## 配置
 
-复制模板：
+仓库已提供默认 `config.toml`，可直接使用。
+如需重置为模板：
 
 ```bash
 cp config.example.toml config.toml
 ```
 
-主要配置：
-- `poll_interval_seconds`
-- `capture_lines`
-- `wait_buffer_seconds`
-- `message_patterns`（正则列表，建议包含 `reset_time` 命名分组）
+支持：
+- 正则 `message_patterns`（建议 `(?P<reset_time>...)`）
+- 解析不到 reset 时间时跳过，不发送 continue
+- 发送前再次确认 pane 仍为限额状态
 
-状态栏/快捷键：
-- `@claude_quota_key`：改快捷键
-- `@claude_quota_status_off=1`：关闭状态栏指示注入
+## 发布到 GitHub 供 TPM 使用
+
+1. 当前仓库：`https://github.com/myacelw/claude-tmux-retry`
+2. 确保仓库根目录存在：
+   - `tmux-claude-quota-auto-continue.tmux`（TPM 入口）
+   - `scripts/toggle-monitor.sh`
+   - `scripts/tmux_claude_quota_auto_continue.py`
+3. push 到 GitHub：
+   ```bash
+   git remote add origin git@github.com:myacelw/claude-tmux-retry.git
+   git push -u origin main
+   ```
+4. 用户通过 `set -g @plugin 'myacelw/claude-tmux-retry'` 安装。
